@@ -16,7 +16,8 @@ jobs:
     - name: Install packages
       run: sudo apt-get install g++ make
     - name: Build
-      run: ./configure
+      run: |
+           ./configure
            make
     - name: Run tests
       run: ./build/tests
@@ -30,7 +31,8 @@ jobs:
     - name: Install packages
       run: brew install llvm make
     - name: Build
-      run: ./configure
+      run: |
+           ./configure
            make
     - name: Run tests
       run: ./build/tests
