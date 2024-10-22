@@ -67,7 +67,7 @@ jobs:
     - name: Run tests
       shell: bash
       run: |
-           cd build
+           ls
            ./tests.exe
     - name: Upload build 
       uses: actions/upload-artifact@v4.4.3
