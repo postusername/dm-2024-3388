@@ -65,7 +65,7 @@ jobs:
            ./configure
            make
     - name: Run tests
-      run: ./build/tests.exe
+      run: .\build\tests.exe
     - name: Upload build 
       uses: actions/upload-artifact@v4.4.3
       with: 
