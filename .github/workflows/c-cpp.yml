@@ -27,7 +27,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install packages
-      run: sudo brew install g++ make
+      run: brew install g++ make
     - name: Build
       run: make
     - name: Run tests
