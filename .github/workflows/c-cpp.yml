@@ -16,7 +16,8 @@ jobs:
     - name: Install packages
       run: sudo apt-get install g++ make
     - name: Build
-      run: make
+      run: ./configure
+           make
     - name: Run tests
       run: ./build/tests
 
@@ -27,8 +28,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install packages
-      run: brew install g++ make
+      run: brew install llvm make
     - name: Build
-      run: make
+      run: ./configure
+           make
     - name: Run tests
       run: ./build/tests
