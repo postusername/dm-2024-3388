@@ -20,7 +20,7 @@ jobs:
     - name: Run tests
       run: ./build/tests
     - name: Upload build 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4.4.3
       with: 
         name: ubuntu
         path: build
@@ -42,7 +42,7 @@ jobs:
            ./build/tests
            mv ./build/algebra ./build/algebra-osx
     - name: Upload build 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4.4.3
       with: 
         name: mac
         path: build
@@ -65,7 +65,7 @@ jobs:
     - name: Run tests
       run: ./build/tests.exe
     - name: Upload build 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4.4.3
       with: 
         name: windows
         path: build
@@ -92,18 +92,18 @@ jobs:
     - name: Upload to Release (Ubuntu)
       uses: JasonEtco/upload-to-release@master 
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       with:
         args: ubuntu/algebra application/x-executable 
     - name: Upload to Release (macOS)
       uses: JasonEtco/upload-to-release@master
       env: 
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       with:
         args: mac/algebra-osx application/x-executable 
     - name: Upload to Release (Windows)
       uses: JasonEtco/upload-to-release@master
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       with: 
         args: win/win.exe application/octet-stream
