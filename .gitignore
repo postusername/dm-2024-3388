@@ -1,8 +1,8 @@
 build/*
 .vscode/*
-
+Makefile
 autom4te.cache/*
-
+config.status
 ##### Windows
 # Windows thumbnail cache files
 Thumbs.db

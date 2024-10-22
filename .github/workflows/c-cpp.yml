@@ -1,8 +1,6 @@
 name: Buildness check
 
 on:
-  push:
-    branches: [ "main", "dev" ]
   pull_request:
     branches: [ "main", "dev" ]
 
@@ -21,6 +19,11 @@ jobs:
            make
     - name: Run tests
       run: ./build/tests
+    - name: Upload build 
+      uses: actions/upload-artifact@v2
+      with: 
+        name: ubuntu
+        path: build
 
   macos-build:
     name: MacOS
@@ -35,7 +38,14 @@ jobs:
            ./configure
            make
     - name: Run tests
-      run: ./build/tests
+      run: |
+           ./build/tests
+           mv ./build/algebra ./build/algebra-osx
+    - name: Upload build 
+      uses: actions/upload-artifact@v2
+      with: 
+        name: mac
+        path: build
   
   windows-build:
     name: Windows 10
@@ -54,3 +64,46 @@ jobs:
            make
     - name: Run tests
       run: ./build/tests.exe
+    - name: Upload build 
+      uses: actions/upload-artifact@v2
+      with: 
+        name: windows
+        path: build
+
+  upload: 
+    name: Upload
+    needs: [ubuntu-build, macos-build, windows-build]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest 
+    steps: 
+    - uses: actions/checkout@v4
+    - name: Download Ubuntu artifact 
+      uses: actions/download-artifact@v4 
+      with:
+        name: ubuntu 
+    - name: Download macOS artifact 
+      uses: actions/download-artifact@v4
+      with:
+        name: mac 
+    - name: Download Windows artifact
+      uses: actions/download-artifact@v4 
+      with:
+        name: win
+    - name: Upload to Release (Ubuntu)
+      uses: JasonEtco/upload-to-release@master 
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} 
+      with:
+        args: ubuntu/algebra application/x-executable 
+    - name: Upload to Release (macOS)
+      uses: JasonEtco/upload-to-release@master
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} 
+      with:
+        args: mac/algebra-osx application/x-executable 
+    - name: Upload to Release (Windows)
+      uses: JasonEtco/upload-to-release@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} 
+      with: 
+        args: win/win.exe application/octet-stream

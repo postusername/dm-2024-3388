@@ -1,5 +1,5 @@
 CXX = @CXX@
-CXXFLAGS = -Weffc++ -Wconversion -std=c++17
+CXXFLAGS = -g --debug -Weffc++ -Wconversion -std=c++17
 
 
 all: algebra tests
@@ -25,3 +25,5 @@ build:
 
 clean:
 	rm -rf build
+	rm config.log
+	rm config.status
