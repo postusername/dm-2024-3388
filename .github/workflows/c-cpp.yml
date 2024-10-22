@@ -67,8 +67,8 @@ jobs:
     - name: Run tests
       shell: bash
       run: |
-           ls
            ./build/tests
+           mv ./build/algebra ./build/algebra-win.exe
     - name: Upload build 
       uses: actions/upload-artifact@v4.4.3
       with: 
