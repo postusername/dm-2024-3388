@@ -36,3 +36,22 @@ jobs:
            make
     - name: Run tests
       run: ./build/tests
+  
+  windows-build:
+    name: Windows 10
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Cpp (C++ / C)
+      uses: aminya/setup-cpp@v0.44.0
+    - name: Install make with Chocolatey
+      uses: crazy-max/ghaction-chocolatey@v3.0.0
+      with:
+          args: install make
+    - name: Build
+      run: |
+           ./configure
+           make
+    - name: Run tests
+      run: ./build/tests.exe
