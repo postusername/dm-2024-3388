@@ -2,19 +2,32 @@ name: Buildness check
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 jobs:
-  build:
-    name: Build for Ubuntu 24
-    runs-on: ubuntu-latest
+  ubuntu-build:
+    name: Ubuntu 24
+    runs-on: ubuntu-24.04
 
     steps:
     - uses: actions/checkout@v4
     - name: Install packages
       run: sudo apt-get install g++ make
+    - name: Build
+      run: make
+    - name: Run tests
+      run: ./build/tests
+
+  macos-build:
+    name: MacOS
+    runs-on: macOS-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install packages
+      run: sudo brew install g++ make
     - name: Build
       run: make
     - name: Run tests
