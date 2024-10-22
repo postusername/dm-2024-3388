@@ -48,6 +48,7 @@ jobs:
       with:
         args: install make
     - name: Build
+      shell: bash
       run: |
            ./configure
            make
