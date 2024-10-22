@@ -1,0 +1,58 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "main" ]
+
+
+jobs:
+  ubuntu-build:
+    name: Ubuntu 20
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install packages
+      run: sudo apt-get install g++ make
+    - name: Build
+      run: |
+           ./configure
+           make
+    - name: Run tests
+      run: ./build/tests
+
+  macos-build:
+    name: MacOS
+    runs-on: macOS-12
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install packages
+      run: brew install make
+    - name: Build
+      run: |
+           ./configure
+           make
+    - name: Run tests
+      run: ./build/tests
+
+  windows-build:
+    name: Windows 10
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install make with Chocolatey
+      uses: crazy-max/ghaction-chocolatey@v3.0.0
+      with:
+        args: install make
+    - name: Build
+      shell: bash
+      run: |
+           ./configure
+           make
+    - name: Run tests
+      shell: bash
+      run: ./build/tests
