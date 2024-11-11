@@ -1,5 +1,7 @@
 //ну короче тут еще натуральные целые и рациональные надо заинклудить даб даб даб
-
+#include "natural.h"
+#include "integer.h"
+#include "rational.h"
 #include <iostream>
 #include <map>
 #include <regex>
