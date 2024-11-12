@@ -66,10 +66,7 @@ class NumberInterface{
     public:
         NumberInterface() {}
         NumberInterface(string str){
-            this->data = new T[str.size()];
-            for (auto i = 0; i < str.size(); ++i){
-                this->data[i] = T(str[str.size() - i - 1]);
-            }
+            from_string(str);
         }
 
         virtual T from_string(string str) = 0;
