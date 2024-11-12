@@ -16,7 +16,7 @@ Rational::Rational(Integer num) {
 }
 
  // Конструктор, принимающий строку
-Rational::Rational(std::string str) : NumberInterface(str) {}
+Rational::Rational(std::string str) : NumberInterface(str) {} // не работает 
 
 // Преобразование строки в пару (Integer, Natural)
 std::pair<Integer, Natural> Rational::from_string(std::string str) {
@@ -45,20 +45,21 @@ std::pair<Integer, Natural> Rational::from_string(std::string str) {
 /* RED_Q_Q Еникеев А. А. 3388 */
 Rational& Rational::reduce() {
   // Получаем НОД числителя и знаменателя
-  Natural gcf = gcf(data.first.abs(), data.second);
+  Natural gcf_num = gcf(data.first.abs(), data.second);
   // Сокращаем числитель
-  data.first = data.first / Integer(gcf);
+  data.first = data.first / Integer(gcf_num);
   // Сокращаем знаменатель
-  data.second = data.second / gcf;
+  data.second = data.second / gcf_num;
   return *this;
 }
 
 /* INT_Q_B Еникеев А.А. 3388 */
 bool Rational::is_int() {
+  Rational copy(to_string());
   // Сокращаем дробь
-  reduce();
+  copy.reduce();
   // Проверяем, является ли она целым числом
-  return data.second == Natural(1);
+  return copy.get_numerator() == Natural(1);
 }
 
 // Получение числителя
