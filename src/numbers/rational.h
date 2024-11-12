@@ -6,6 +6,7 @@
 #include <utility>
 #include <regex>
 #include <stdexcept>
+#include <cstdint>
 
 #include "integer.h"
 #include "natural.h"
@@ -20,7 +21,7 @@
 class Rational : public NumberInterface<std::pair<Integer, Natural>> {
  public:
   // Конструкторы
-  Rational(int num = 0);
+  Rational(int64_t num = 0);
   Rational(const Integer& numerator, const Natural& denominator);
   Rational(Integer num); // TRANS_Z_Q
   Rational(std::string str);

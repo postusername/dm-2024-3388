@@ -1,7 +1,7 @@
 #include "rational.h"
 
 // Конструктор с параметром по умолчанию
-Rational::Rational(int num) : Rational(Integer(num)) {}
+Rational::Rational(int64_t num) : Rational(Integer(num)) {}
 
 // Конструктор, принимающий числитель и знаменатель
 Rational::Rational(const Integer& numerator, const Natural& denominator) {
