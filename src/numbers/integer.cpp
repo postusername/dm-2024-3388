@@ -8,7 +8,9 @@
 
 // Конструктор от целого числа int64_t
 Integer::Integer(int64_t num) {
-  if (num < 0) {
+  if (num == std::numeric_limits<int64_t>::min()) {
+    data = {true, Natural(static_cast<uint64_t>(-(num + 1)) + 1)}; // Обработка минимального значения
+  } else if (num < 0) {
     data = {true, Natural(-num)};
   } else {
     data = {false, Natural(num)};
@@ -17,10 +19,6 @@ Integer::Integer(int64_t num) {
 
 // TRANS_N_Z Ижболдин А.В 3388
 Integer::Integer(Natural num) : Integer(false, num) {}
-
-// Конструктор от строки
-Integer::Integer(std::string str) : NumberInterface<std::pair<bool, Natural>>(str) {}
-
 
 // ABS_Z_N Ижболдин А.В 3388
 Natural Integer::abs() const {
@@ -77,14 +75,14 @@ const Integer operator-(const Integer &left, const Integer &right) {
 
 // MUL_ZZ_Z Ижболдин А.В 3388
 const Integer operator*(const Integer &left, const Integer &right) {
-  bool result_sign = left.data.first != right.data.first;
+  bool result_sign = left.data.first ^ right.data.first;
   return Integer(result_sign, left.data.second * right.data.second);
 }
 
 // DIV_ZZ_Z Ижболдин А.В 3388
 const Integer operator/(const Integer &left, const Integer &right) {
   if (right.data.second == Natural(0)) throw std::invalid_argument("Division by zero");
-  bool result_sign = left.data.first != right.data.first;
+  bool result_sign = left.data.first ^ right.data.first;
   return Integer(result_sign, left.data.second / right.data.second);
 }
 

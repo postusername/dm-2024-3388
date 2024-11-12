@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstdint>
 #include <regex>
+#include <limits>
 
 #include "base.h"
 #include "natural.h"
@@ -22,8 +23,6 @@ class Integer : public NumberInterface<std::pair<bool, Natural>> {
   Integer(int64_t num);
 // TRANS_N_Z Ижболдин А.В 3388
   Integer(Natural num);
-// Конструктор от строки
-  Integer(std::string str);
 
 // Метод для преобразования строки в пару <bool, Natural>
   std::pair<bool, Natural> from_string(std::string str);
