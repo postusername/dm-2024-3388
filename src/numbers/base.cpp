@@ -66,7 +66,7 @@ class NumberInterface{
     public:
         NumberInterface() {}
         NumberInterface(string str){
-            from_string(str);
+            this->data = from_string(str);
         }
 
         virtual T from_string(string str) = 0;
