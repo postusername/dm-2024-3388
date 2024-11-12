@@ -8,7 +8,7 @@
 #include <regex>
 
 #include "base.h"
-#include "natural.h"
+#include "Natural.h"
 
 /*************************************
  * Целые числа                       *
@@ -54,6 +54,8 @@ class Integer : public NumberInterface<std::pair<bool, Natural>> {
   friend const Integer operator/(const Integer &left, const Integer &right);
 // MOD_ZZ_Z Ижболдин А.В 3388
   friend const Integer operator%(const Integer &left, const Integer &right);
+// Строковое представление
+  std::string to_string() const;
 
  private:
   Integer(bool is_negative, Natural natural_value); // Приватный конструктор

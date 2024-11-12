@@ -16,7 +16,7 @@ Integer::Integer(int64_t num) {
 }
 
 // TRANS_N_Z Ижболдин А.В 3388
-Integer::Integer(Natural num) : Integer({false, num}) {}
+Integer::Integer(Natural num) : Integer(false, num) {}
 
 // Конструктор от строки
 Integer::Integer(std::string str) : NumberInterface<std::pair<bool, Natural>>(str) {}
@@ -114,4 +114,8 @@ pair<bool, Natural> * Integer::from_string(std::string str) {
     return new std::pair<bool, Natural>(sign, num);
   }
   throw std::invalid_argument("Input string is not in the expected format.");
+}
+// Строковое представление
+std::string Integer::to_string() const {
+  return data.first ? "-" : "" + data.second.to_string();
 }
