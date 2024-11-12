@@ -23,12 +23,12 @@ Integer::Integer(std::string str) : NumberInterface<std::pair<bool, Natural>>(st
 
 
 // ABS_Z_N Ижболдин А.В 3388
-Natural Integer::abs() {
+Natural Integer::abs() const {
   return data.second;
 }
 
 // SGN_Z_D Ижболдин А.В 3388
-int Integer::sign() {
+int Integer::sign() const {
   return data.first ? -1 : 1;
 }
 

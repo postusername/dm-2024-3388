@@ -29,10 +29,10 @@ class Integer : public NumberInterface<std::pair<bool, Natural>> {
   std::pair<bool, Natural> *from_string(std::string str);
 
 // ABS_Z_N Ижболдин А.В 3388
-  Natural abs();
+  Natural abs() const;
 
 // SGN_Z_D Ижболдин А.В 3388
-  int sign();
+  int sign() const;
 
 // Операторы сравнения
   friend const bool operator<(const Integer &left, const Integer &right);
