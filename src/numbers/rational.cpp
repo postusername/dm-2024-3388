@@ -1,7 +1,7 @@
 #include "rational.h"
 
-// Конструктор по умолчанию
-Rational::Rational() : Rational(Integer(0)) {}
+// Конструктор с параметром по умолчанию
+Rational::Rational(int num) : Rational(Integer(num)) {}
 
 // Конструктор, принимающий числитель и знаменатель
 Rational::Rational(const Integer& numerator, const Natural& denominator) {
@@ -75,6 +75,7 @@ Natural Rational::get_denominator() const {
 std::string Rational::to_string() const {
     return "Frac[" + data.first.to_string() + ", " + data.second.to_string() + "]";
 }
+
 // Оператор сравнения < 
 const bool operator<(const Rational& left, const Rational& right) {
   // Вычисляем числители с общим знаменателем и сравниваем числители
