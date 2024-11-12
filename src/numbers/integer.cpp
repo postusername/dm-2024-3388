@@ -101,7 +101,7 @@ Integer::Integer(bool is_negative, Natural natural_value) {
 }
 
 // Метод для преобразования строки в пару <bool, Natural>
-pair<bool, Natural> * Integer::from_string(std::string str) {
+pair<bool, Natural> Integer::from_string(std::string str) {
   std::regex pattern(R"(([\-])?(\d+))");
   std::smatch matches;
 
@@ -111,11 +111,11 @@ pair<bool, Natural> * Integer::from_string(std::string str) {
     if (matches[1].str().empty())
       sign = false;
     Natural num = Natural(matches[2].str());
-    return new std::pair<bool, Natural>(sign, num);
+    return std::pair<bool, Natural>(sign, num);
   }
   throw std::invalid_argument("Input string is not in the expected format.");
 }
-// Строковое представление
+
 std::string Integer::to_string() const {
   return data.first ? "-" : "" + data.second.to_string();
 }
