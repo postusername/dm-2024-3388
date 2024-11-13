@@ -9,12 +9,17 @@
 // Конструктор от целого числа int64_t
 Integer::Integer(int64_t num) {
   if (num == std::numeric_limits<int64_t>::min()) {
-    data = {true, Natural(static_cast<uint64_t>(-(num + 1)) + 1)}; // Обработка минимального значения
+    this->data = {true, Natural(static_cast<uint64_t>(-(num + 1)) + 1)}; // Обработка минимального значения
   } else if (num < 0) {
-    data = {true, Natural(-num)};
+    this->data = {true, Natural(-num)};
   } else {
-    data = {false, Natural(num)};
+    this->data = {false, Natural(num)};
   }
+}
+
+// Конструктор от строки
+Integer::Integer(std::string str) {
+  data = from_string(str);
 }
 
 // TRANS_N_Z Ижболдин А.В 3388
@@ -48,6 +53,8 @@ const bool operator==(const Integer &left, const Integer &right) {
 
 // MUL_ZM_Z Ижболдин А.В 3388
 const Integer operator-(const Integer &right) {
+  if (right.data.second == Natural(right.data.second == Natural(0)))
+    return right;
   return Integer(!right.data.first, right.data.second);
 }
 
@@ -89,12 +96,23 @@ const Integer operator/(const Integer &left, const Integer &right) {
 // MOD_ZZ_Z Ижболдин А.В 3388
 const Integer operator%(const Integer &left, const Integer &right) {
   if (right.data.second == Natural(0)) throw std::invalid_argument("Modulo by zero");
-  bool result_sign = left.data.first;
-  return Integer(result_sign, left.data.second % right.data.second);
+
+  Natural remainder = left.data.second % right.data.second;
+
+  if (left.data.first && remainder != Natural(0)) {
+    remainder = right.data.second - remainder;
+  }
+
+  // Результат всегда положителен
+  return Integer(false, remainder);
 }
+
+
 
 // Приватный конструктор для создания Integer с определённым знаком
 Integer::Integer(bool is_negative, Natural natural_value) {
+  if (natural_value == Natural(0))
+    is_negative = false;
   data = std::make_pair(is_negative, natural_value);
 }
 
@@ -109,11 +127,12 @@ pair<bool, Natural> Integer::from_string(std::string str) {
     if (matches[1].str().empty())
       sign = false;
     Natural num = Natural(matches[2].str());
+    if (num == Natural(0))
+      sign = false;
     return std::pair<bool, Natural>(sign, num);
   }
   throw std::invalid_argument("Input string is not in the expected format.");
 }
-
 std::string Integer::to_string() const {
-  return data.first ? "-" : "" + data.second.to_string();
+  return (data.first ? "-" : "") + data.second.to_string(data.second);
 }

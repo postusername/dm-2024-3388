@@ -19,13 +19,16 @@
 
 class Integer : public NumberInterface<std::pair<bool, Natural>> {
  public:
+  Integer() = default;
 // Конструктор от целого числа int64_t
   Integer(int64_t num);
 // TRANS_N_Z Ижболдин А.В 3388
   Integer(Natural num);
+// Конструктор от строки
+  Integer(std::string str);
 
 // Метод для преобразования строки в пару <bool, Natural>
-  std::pair<bool, Natural> from_string(std::string str);
+  std::pair<bool, Natural> from_string(std::string str) override;
 
 // ABS_Z_N Ижболдин А.В 3388
   Natural abs() const;
@@ -54,7 +57,7 @@ class Integer : public NumberInterface<std::pair<bool, Natural>> {
 // MOD_ZZ_Z Ижболдин А.В 3388
   friend const Integer operator%(const Integer &left, const Integer &right);
 
-  std::string to_string() const;
+  std::string to_string() const override;
 
  private:
   Integer(bool is_negative, Natural natural_value); // Приватный конструктор
