@@ -10,7 +10,7 @@
 
 #include "integer.h"
 #include "natural.h"
-#include "NumberInterface.h"
+#include "base.h"
 
 /*************************************
  * Рациональные числа (дроби)        *
