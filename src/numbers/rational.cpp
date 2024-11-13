@@ -97,7 +97,9 @@ const bool operator==(const Rational& left, const Rational& right) {
 
 /* TRANS_Q_Z Еникеев А. А. 3388 */
 Rational::operator Integer() {
-  if (!is_int()) {
+  // Сокращаем дробь
+  reduce();
+  if (!(data.second == Natural(1))) {
     throw IntegerRangeException();
   }
   // Если знаменатель 1, возвращаем числитель
