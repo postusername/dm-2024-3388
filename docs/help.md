@@ -486,7 +486,7 @@ algebra> TRANS_Q_Z(а)
 algebra> a = Frac[1, 3]
 algebra> b = Frac[1, 2]
 algebra> ADD_QQ_Q (a, b)
->>>>>>>> Frac[1, 6]
+>>>>>>>> Frac[5, 6]
 ```
 
 #### SUB_QQ_Q (a, b)
@@ -501,7 +501,7 @@ algebra> ADD_QQ_Q (a, b)
 algebra> a = Frac[1, 3]
 algebra> b = Frac[1, 2]
 algebra> SUB_QQ_Q (a, b)
->>>>>>>> Frac[1, 6]
+>>>>>>>> Frac[-1, 6]
 ```
 
 #### MUL_QQ_Q (a, b)
