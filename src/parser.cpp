@@ -1,48 +1,42 @@
 #include "parser.h"
 
-using NumberVariant = std::variant<Natural, Integer, Rational, Polynomial>;
 
-std::vector<std::string> split(const std::string &input) {
+std::vector<std::string> split(const std::string &input)
+{
     std::vector<std::string> tokens;
     std::string current_token;
     int bracket_depth = 0;
 
-    for (size_t i = 0; i < input.size(); ++i) 
+    for (size_t i = 0; i < input.size(); ++i)
     {
         char c = input[i];
 
-        if (c == ' ' && bracket_depth == 0) 
+        if (c == ' ' && bracket_depth == 0)
         {
-            if (!current_token.empty()) 
+            if (!current_token.empty())
             {
                 tokens.push_back(current_token);
                 current_token.clear();
             }
-        } else {
-            if (c == '[' || c == '(') 
-            {
+        }
+        else
+        {
+            if (c == '[' || c == '(')
                 bracket_depth++;
-            }  else if (c == ']' || c == ')') {
+            else if (c == ']' || c == ')')
                 bracket_depth--;
-            }
 
-            if (bracket_depth < 0) {
+            if (bracket_depth < 0)
                 throw std::runtime_error("SyntaxError: bracket was never opened");
-            }
 
             current_token += c;
         }
     }
 
-    if (bracket_depth != 0) 
-    {
+    if (bracket_depth != 0)
         throw std::runtime_error("SyntaxError: bracket was never closed");
-    }
-
-    if (!current_token.empty()) 
-    {
+    if (!current_token.empty())
         tokens.push_back(current_token);
-    }
 
     return tokens;
 }
@@ -50,32 +44,21 @@ std::vector<std::string> split(const std::string &input) {
 std::vector<Token> Parser::tokenize(const std::string &input)
 {
     std::vector<Token> tokens;
-
     for (auto token : split(input))
-    {
         tokens.push_back(create_token(token));
-    }
     return tokens;
 }
 
 Token Parser::create_token(const std::string &token)
 {
     if (is_number(token))
-    {
         return create_number_token(token);
-    }
     else if (is_variable(token))
-    {
         return Token(token, TokenType::Variable);
-    }
     else if (is_contains_brackets(token))
-    {
         return validate_bracket_sequence(token);
-    }
     else
-    {
         return validate_operator(token);
-    }
 }
 
 Token Parser::validate_bracket_sequence(const std::string &token)
@@ -92,31 +75,30 @@ Token Parser::validate_bracket_sequence(const std::string &token)
     size_t close_func_paren_pos = token.find(')');
 
     if (open_func_paren_pos == std::string::npos ||
-       close_func_paren_pos == std::string::npos || 
-       open_func_paren_pos > close_func_paren_pos) 
+        close_func_paren_pos == std::string::npos ||
+        open_func_paren_pos > close_func_paren_pos)
     {
         throw std::runtime_error("SyntaxError: Invalid bracket sequence in token '" + token + "'");
     }
 
     std::string func_name = token.substr(0, open_func_paren_pos);
 
-    if (std::find(func_names.begin(), func_names.end(), func_name) != func_names.end()) 
+    if (std::find(func_names.begin(), func_names.end(), func_name) != func_names.end())
     {
         return Token(token, TokenType::Function);
-    } else {
-        throw std::runtime_error("NameError: function '" + func_name + "' is not defined");
     }
+    else
+        throw std::runtime_error("NameError: function '" + func_name + "' is not defined");
 }
 
 Token Parser::validate_operator(const std::string &token)
 {
-    if (token == "="){
+    if (token == "=")
         return Token(token, TokenType::Assignment);
-    } else if (token == "+" || token == "-" || token == "*" || token == "/") {
+    else if (token == "+" || token == "-" || token == "*" || token == "/")
         return Token(token, TokenType::BinaryOperator);
-    } else {
+    else
         throw std::runtime_error("SyntaxError: unrecognized token '" + token + "'");
-    }
 }
 
 Token Parser::create_number_token(const std::string &token)
@@ -131,13 +113,22 @@ Token Parser::create_number_token(const std::string &token)
         try
         {
             auto num = Integer(token);
-            return Token(token, TokenType::Integer);
+            if (num.to_string() == token)
+                return Token(token, TokenType::Integer);
+            else if (num.abs() == Natural(0))
+                return Token(token, TokenType::Natural);
+            else
+                throw std::invalid_argument("");
         }
         catch (const std::invalid_argument &e)
         {
             try
             {
                 auto num = Rational(token);
+                if (num.to_string() == token)
+                    return Token(token, TokenType::Rational);
+                else
+                    throw std::invalid_argument("");
                 return Token(token, TokenType::Rational);
             }
             catch (const std::invalid_argument &e)

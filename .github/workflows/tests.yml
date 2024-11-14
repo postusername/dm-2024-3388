@@ -21,7 +21,11 @@ jobs:
            ./configure
            make
     - name: Run tests
-      run: ./build/tests
+      run: |
+           ./build/test_natural
+           ./build/test_integer
+           ./build/test_rational
+           ./build/test_polynomial
 
   macos-build:
     name: MacOS
@@ -36,7 +40,11 @@ jobs:
            ./configure
            make
     - name: Run tests
-      run: ./build/tests
+      run: |
+          ./build/test_natural
+          ./build/test_integer
+          ./build/test_rational
+          ./build/test_polynomial
 
   windows-build:
     name: Windows 10
@@ -55,4 +63,8 @@ jobs:
            make
     - name: Run tests
       shell: bash
-      run: ./build/tests
+      run: |
+          ./build/test_natural
+          ./build/test_integer
+          ./build/test_rational
+          ./build/test_polynomial

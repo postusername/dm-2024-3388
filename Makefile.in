@@ -5,7 +5,7 @@ CXXFLAGS = -g --debug -Wconversion -std=c++17
 all: algebra tests
 
 algebra: build algebra.o parser.o base.o natural.o integer.o rational.o polynomial.o
-	$(CXX) $(CXXFLAGS) build/obj/algebra.o build/obj/parser.o build/obj/base.o build/obj/natural.o build/obj/integer.o build/obj/rational.o build/obj/polynomial.o -o build/algebra
+	$(CXX) $(CXXFLAGS) build/obj/algebra.o build/obj/parser.o build/obj/tree.o build/obj/base.o build/obj/natural.o build/obj/integer.o build/obj/rational.o build/obj/polynomial.o -o build/algebra
 
 tests: build tests.o base.o natural.o integer.o rational.o polynomial.o
 	$(CXX) $(CXXFLAGS) build/obj/test_natural.o build/obj/base.o build/obj/natural.o -o build/test_natural
@@ -18,6 +18,7 @@ algebra.o:
 
 parser.o:
 	$(CXX) $(CXXFLAGS) -c src/parser.cpp -Isrc -o build/obj/parser.o
+	$(CXX) $(CXXFLAGS) -c src/tree.cpp -Isrc -o build/obj/tree.o
 
 tests.o:
 	$(CXX) $(CXXFLAGS) -c tests/test_natural.cpp -Isrc -o build/obj/test_natural.o
