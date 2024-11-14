@@ -5,34 +5,42 @@ using NumberVariant = std::variant<Natural, Integer, Rational, Polynomial>;
 std::vector<std::string> split(const std::string &input) {
     std::vector<std::string> tokens;
     std::string current_token;
-    int bracket_depth = 0;  // Уровень вложенности скобок
+    int bracket_depth = 0;
 
-    for (size_t i = 0; i < input.size(); ++i) {
+    for (size_t i = 0; i < input.size(); ++i) 
+    {
         char c = input[i];
 
-        if (c == ' ' && bracket_depth == 0) {
-            // Если пробел и мы вне всех скобок, добавляем токен
-            if (!current_token.empty()) {
+        if (c == ' ' && bracket_depth == 0) 
+        {
+            if (!current_token.empty()) 
+            {
                 tokens.push_back(current_token);
                 current_token.clear();
             }
         } else {
-            // Открывающие скобки увеличивают глубину
-            if (c == '[' || c == '(') {
+            if (c == '[' || c == '(') 
+            {
                 bracket_depth++;
-            }
-            // Закрывающие скобки уменьшают глубину
-            else if (c == ']' || c == ')') {
+            }  else if (c == ']' || c == ')') {
                 bracket_depth--;
             }
 
-            // Добавляем символ к текущему токену
+            if (bracket_depth < 0) {
+                throw std::runtime_error("SyntaxError: bracket was never opened");
+            }
+
             current_token += c;
         }
     }
 
-    // Добавляем последний токен, если он не пустой
-    if (!current_token.empty()) {
+    if (bracket_depth != 0) 
+    {
+        throw std::runtime_error("SyntaxError: bracket was never closed");
+    }
+
+    if (!current_token.empty()) 
+    {
         tokens.push_back(current_token);
     }
 
@@ -45,7 +53,6 @@ std::vector<Token> Parser::tokenize(const std::string &input)
 
     for (auto token : split(input))
     {
-        std::cout << "SPLITTED: " << token << endl;
         tokens.push_back(create_token(token));
     }
     return tokens;
@@ -71,33 +78,43 @@ Token Parser::create_token(const std::string &token)
     }
 }
 
+Token Parser::validate_bracket_sequence(const std::string &token)
+{
+    size_t open_paren_pos = token.find('[');
+    size_t close_paren_pos = token.find(']');
+    if (open_paren_pos != std::string::npos &&
+        close_paren_pos != std::string::npos &&
+        open_paren_pos < close_paren_pos)
+    {
+        return create_number_token(token);
+    }
+    size_t open_func_paren_pos = token.find('(');
+    size_t close_func_paren_pos = token.find(')');
+
+    if (open_func_paren_pos == std::string::npos ||
+       close_func_paren_pos == std::string::npos || 
+       open_func_paren_pos > close_func_paren_pos) 
+    {
+        throw std::runtime_error("SyntaxError: Invalid bracket sequence in token '" + token + "'");
+    }
+
+    std::string func_name = token.substr(0, open_func_paren_pos);
+
+    if (std::find(func_names.begin(), func_names.end(), func_name) != func_names.end()) 
+    {
+        return Token(token, TokenType::Function);
+    } else {
+        throw std::runtime_error("NameError: function '" + func_name + "' is not defined");
+    }
+}
+
 Token Parser::validate_operator(const std::string &token)
 {
-    vector<char> operators;
-    for (char c : token)
-    {
-        if (c == '+' || c == '-' || c == '*' || c == '/' || c == '=')
-        {
-            operators.push_back(c);
-        }
-        if (operators.size() > 1)
-        {
-            throw std::runtime_error("SyntaxError: unrecognized token '" + token + "'");
-        }
-    }
-    if (operators.size() == 1)
-    {
-        if (operators[0] == '=')
-        {
-            return Token(std::move(token), TokenType::Assignment);
-        }
-        else
-        {
-            return Token(std::move(token), TokenType::BinaryOperator);
-        }
-    }
-    else
-    {
+    if (token == "="){
+        return Token(token, TokenType::Assignment);
+    } else if (token == "+" || token == "-" || token == "*" || token == "/") {
+        return Token(token, TokenType::BinaryOperator);
+    } else {
         throw std::runtime_error("SyntaxError: unrecognized token '" + token + "'");
     }
 }
@@ -139,51 +156,6 @@ Token Parser::create_number_token(const std::string &token)
     }
 }
 
-Token Parser::validate_bracket_sequence(const std::string &token)
-{
-    std::unordered_map<char, char> bracket_pairs{
-        {'(', ')'},
-        {'[', ']'}};
-    std::stack<char> stk;
-    std::vector<char> brackets;
-    for (char c : token)
-    {
-        if (c == '(' || c == '[')
-        {
-            stk.push(c);
-            brackets.push_back(c);
-        }
-        else if (c == ')' || c == ']')
-        {
-            if (stk.empty() || stk.top() != bracket_pairs[c])
-            {
-                throw std::runtime_error("SyntaxError: bracket was never opened");
-            }
-            stk.pop();
-        }
-    }
-    if (stk.empty())
-    {
-        if (brackets.size() == 2 && brackets[0] == '[' && brackets[1] == ']')
-        {
-            return create_number_token(token);
-        }
-        const std::string &func_name = token.substr(0, token.find('('));
-        if (std::find(func_names.begin(), func_names.end(), func_name) != func_names.end())
-        {
-            return Token(token, TokenType::Function);
-        }
-        else
-        {
-            throw std::runtime_error("NameError: function '" + func_name + "' is not defined");
-        }
-    }
-    else
-    {
-        throw std::runtime_error("SyntaxError: bracket was never closed");
-    }
-}
-
 bool Parser::is_contains_brackets(const std::string &token)
 {
     std::string brackets = "[]()";
@@ -195,7 +167,6 @@ bool Parser::is_variable(const std::string &token)
     return std::all_of(token.begin(), token.end(),
                        [](char c)
                        {
-                           std::cout << c << endl;
                            return (std::isalpha(c) || c == '_') && (c != '=');
                        });
 }
