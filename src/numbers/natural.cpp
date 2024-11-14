@@ -8,11 +8,12 @@ ostream &operator<<(ostream &stream, Natural &num)
 }
 
 
-vector<Digit> Natural::from_string(string str)
-{
-    vector<Digit> data;
+vector<Digit> Natural::from_string(string str) {
+    std::vector<Digit> data;
     for (size_t i = 0; i < str.size(); ++i)
     {
+        if (str[i] < '0' || str[i] > '9')
+            throw std::invalid_argument("Invalid digit");
         data.push_back(Digit(str[i] - '0'));
     }
     reverse(data.begin(), data.end());

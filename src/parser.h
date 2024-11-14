@@ -38,12 +38,16 @@ struct Token
     TokenType type;
 
     Token(std::string value, TokenType type) : value(value), type(type) {}
+
+    bool operator==(const Token &other) const
+    {
+        return value == other.value && type == other.type;
+    }   
 };
 
 class Parser
 {
 private:
-    std::map<std::string, NumberConst> VarStorage;
     const std::vector<std::string> func_names = {
         "COM_NN_D"
     };
@@ -54,11 +58,10 @@ private:
     Token create_token(const std::string &token);
     Token validate_operator(const std::string &token);
     Token validate_bracket_sequence(const std::string &token);
-    Token create_number_token(const std::string &token);
-
 public:
     Parser() = default;
     std::vector<Token> tokenize(const std::string &input);
+    Token create_number_token(const std::string &token);
 };
 
 #endif // PARSER_H
