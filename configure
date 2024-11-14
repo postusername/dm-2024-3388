@@ -615,7 +615,7 @@ PACKAGE_STRING='FULL-PACKAGE-NAME VERSION'
 PACKAGE_BUGREPORT='BUG-REPORT-ADDRESS'
 PACKAGE_URL=''
 
-ac_unique_file="src/demo.cpp"
+ac_unique_file="src/algebra.cpp"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 ac_ct_CC
