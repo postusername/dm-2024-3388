@@ -2,14 +2,50 @@
 
 using NumberVariant = std::variant<Natural, Integer, Rational, Polynomial>;
 
+std::vector<std::string> split(const std::string &input) {
+    std::vector<std::string> tokens;
+    std::string current_token;
+    int bracket_depth = 0;  // Уровень вложенности скобок
+
+    for (size_t i = 0; i < input.size(); ++i) {
+        char c = input[i];
+
+        if (c == ' ' && bracket_depth == 0) {
+            // Если пробел и мы вне всех скобок, добавляем токен
+            if (!current_token.empty()) {
+                tokens.push_back(current_token);
+                current_token.clear();
+            }
+        } else {
+            // Открывающие скобки увеличивают глубину
+            if (c == '[' || c == '(') {
+                bracket_depth++;
+            }
+            // Закрывающие скобки уменьшают глубину
+            else if (c == ']' || c == ')') {
+                bracket_depth--;
+            }
+
+            // Добавляем символ к текущему токену
+            current_token += c;
+        }
+    }
+
+    // Добавляем последний токен, если он не пустой
+    if (!current_token.empty()) {
+        tokens.push_back(current_token);
+    }
+
+    return tokens;
+}
+
 std::vector<Token> Parser::tokenize(const std::string &input)
 {
-    std::istringstream stream(input);
-    std::string token;
     std::vector<Token> tokens;
 
-    while (stream >> token)
+    for (auto token : split(input))
     {
+        std::cout << "SPLITTED: " << token << endl;
         tokens.push_back(create_token(token));
     }
     return tokens;
