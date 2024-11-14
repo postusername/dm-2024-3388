@@ -1,9 +1,9 @@
 #include "polynomial.h"
 
 
-std::map<Natural, Rational>* Polynomial::from_string(std::string input) {
+std::map<Natural, Rational> Polynomial::from_string(std::string input) {
     std::map<Natural, Rational> data;
-        std::regex full_regex(R"(^Poly\[((\[(Frac\[\s*-?\d+\s*,\s*[1-9]\d*\]|-?\d+)\s*,\s*[0-9]+\])(,\s*\[(Frac\[\s*-?\d+\s*,\s*[1-9]\d*\]|-?\d+)\s*,\s*[0-9]+\])*)\]$)");
+        std::regex full_regex(R"(^Poly\[((\[(Frac\[\s*-?\d+\s*,\s*[1-9]\d*\]|-?\d+)\s*,\s*-?[0-9]+\])(,\s*\[(Frac\[\s*-?\d+\s*,\s*[1-9]\d*\]|-?\d+)\s*,\s*[0-9]+\])*)\]$)");
 
         if (!std::regex_match(input, full_regex)) {
             throw std::invalid_argument("Invalid input format");
@@ -29,29 +29,34 @@ std::map<Natural, Rational>* Polynomial::from_string(std::string input) {
                 coefficient = Rational(Integer(match[1].str()));
             }
             // для отладки
-            // std::cout << "Rational: " << match[2].str() << ", deg: " << match[1].str() << std::endl;
             if (!(degree > Natural(0) && coefficient == Rational(Integer(0)))) //если степень >0 и коэффициент 0, не создаем терм.
                 data[degree] = coefficient;
     }
 
-    return &data;
+    return data;
 }
 
-std::string Polynomial::to_string() const{
-        std::string result = "Poly[";
-        bool first = true;
+std::string Polynomial::to_string() const {
+    std::string result = "Poly[";
+    bool first = true;
 
-        for (const auto& term : this->data) {
-            if (!first) {
-                result += ", ";
-            }
-            first = false;
+    // Обратный обход terms для вывода от старших к младшим степеням
+    for (auto it = this->data.rbegin(); it != this->data.rend(); ++it) {
+        const auto& term = *it;
 
-            result += "[" + term.second.to_string() + ", " + term.first.to_string() + "]";
+        if (!first) {
+            result += ", ";
         }
+        first = false;
 
-        result += "]";
-        return result;
+        if (term.second.get_denominator() == Integer(1))
+            result += "[" + term.second.get_numerator().to_string() + ", " + term.first.to_string() + "]";
+        else
+            result += "[" + term.second.to_string() + ", " + term.first.to_string() + "]";
+    }
+
+    result += "]";
+    return result;
 }
 
 Polynomial::Polynomial(const Rational num){
@@ -64,17 +69,23 @@ Polynomial::Polynomial(std::initializer_list<std::pair<Natural, Rational>> init_
         this->data[monome.first] = monome.second;
     }
 }
+
+Polynomial::Polynomial(std::string str){
+    this->data = from_string(str);
+}
+
 /* ADD_PP_P Лутфулин Д. А. 3388 */
 Polynomial& Polynomial::operator+=(const Polynomial& other){
     //проходимся по мономам добавляемого многочлена и складываем соответствующие коэффициенты
     for (const auto& [deg, val] : other.data){
         this->data[deg] = this->data[deg] + val;
         //если выходит что текущий коэф. стал нулём - удаляем его
-        if (deg > Natural(0) && this->data[deg] == Rational(0))
+        if (deg > Natural(0) && (this->data[deg] == Rational(0) || this->data[deg] == Rational({Integer("-0"),Natural(1)})))
             this->data.erase(deg); 
     }
     return *this;
 }
+
 
 Polynomial& Polynomial::operator+=(const Rational& num){
     this->data[Natural(0)] = this->data[Natural(0)] + num;
@@ -86,7 +97,8 @@ Polynomial& Polynomial::operator-=(const Polynomial& other){
     for (const auto& [deg, val] : other.data){
         this->data[deg] = this->data[deg] - val;
         //если получили коэффициент 0, то удаляем его, если это не нулевая степень(чтобы был многочлен "0")
-        if (deg > Natural(0) && this->data[deg] == Rational(0))
+        // if (deg > Natural(0) && this->data[deg] == Rational(0)) - ВЕРНУТЬ ВМЕСТО СЛЕДУЮЩЕЙ СТРОКИ ПОСЛЕ ИСПРАВЛЕНИЯ -0 != 0!!!!1!!!1!11!!!!!!!!!
+        if (deg > Natural(0) && (this->data[deg] == Rational(0) || this->data[deg] == Rational({Integer("-0"),Natural(1)})))
             this->data.erase(deg); 
     }
     return *this;
@@ -110,7 +122,7 @@ const Polynomial operator+(const Polynomial& poly, const Rational& num){
 }
 
 const Polynomial operator-(const Polynomial& left, const Polynomial& right){
-    Polynomial result = left - right;
+    Polynomial result = left;
     result -= right;
     return result;
 }
@@ -121,11 +133,23 @@ const Polynomial operator-(const Polynomial& poly, const Rational& num){
     return result;
 }
 
+const bool operator==(const Polynomial& left,const Polynomial& right){
+    Polynomial divv = left - right;
+    // многочлены равны если их разность равна 0
+    return (divv.degree() == Natural(0)) && (divv.lead() == Rational("Frac[-0,1]")) || (divv.lead() == Rational(0));
+}
+
 /* MUL_PQ_P Лутфулин Д. А. 3388 */
 Polynomial& Polynomial::operator*=(const Rational& num){
     //проходимся по всем коэффциентам многочлена и умножаем на num
-    for (auto& [deg, val] : this->data){
-        this->data[deg] = this->data[deg] * num;
+    if (num == Rational(0)){ // умножение на 0 дает многочлен равный 0 {
+        this->data.clear();  // Очищаем все коэффициенты (полином становится нулевым)
+        this->data[0] = Rational(0);  // Явно ставим коэффициент при нулевой степени равным 0
+    }
+    else{ // умножение полинома на 0 дает 0
+        for (auto& [deg, val] : this->data){
+            this->data[deg] = this->data[deg] * num;
+        }
     }
     return *this;
 }
@@ -165,11 +189,11 @@ Natural Polynomial::degree() const {
 
 /* FAC_P_Q Лутфулин Д. А. 3388 */
 Rational Polynomial::canonical(){
-    Natural gcf_numerators = this->data.begin()->second.get_numerator(); // начинаем собирать числители для НОД с монома минимальной степени
+    Natural gcf_numerators = this->data.begin()->second.get_numerator().abs(); // начинаем собирать модули числителей для НОД с монома минимальной степени
     Natural lcm_denominators = this->data.begin()->second.get_denominator(); // начинаем собирать знаменатели для НОК с монома минимальной степени
     for(auto& [deg, val] : this->data){
-        gcf_numerators = gcf(gcf_numerators, abs(val.get_numerator()));
-        lcm_denominators = lcm(lcm_denominators, abs(val.get_denominator()));
+        gcf_numerators = gcf(gcf_numerators, val.get_numerator().abs());
+        lcm_denominators = lcm(lcm_denominators, val.get_denominator());
     }
     //ответ - НОД числителей / НОК знаменателей
     Rational ans = Rational(Integer(gcf_numerators), lcm_denominators);
@@ -193,7 +217,7 @@ const Polynomial operator*(const Polynomial& left, const Polynomial& right){
 const Polynomial operator/(const Polynomial& left,const Polynomial& right){
     Polynomial divident = left, quotient = Polynomial(Rational(0)), sub_coefficient; // делимое, делитель, вычитаемое из делимого
     Natural sub_lead(0); // степень вычитаемого коэфициента
-    while (divident.degree() > right.degree()){ // вычитаем из делимого sub_coefficient пока делимое не станет остатком
+    while (divident.degree() >= right.degree()){ // вычитаем из делимого sub_coefficient пока делимое не станет остатком
         sub_lead = divident.degree() - right.degree(); //вычисляем степень текущего одночлена 
         sub_coefficient = Polynomial(divident.lead() / right.lead()).mul_powX(sub_lead); // вычисление следующего 
         quotient += sub_coefficient; // прибавляем получившийся моном к частному
@@ -213,7 +237,7 @@ const Polynomial operator%(const Polynomial& left, const Polynomial& right){
 /*GCF_PP_P Лутфулин Д. А. 3388 */
 Polynomial gcf(Polynomial a, Polynomial b){
     //стандартный алгоритм НОД но для многочленов сравниваются степени
-    while (!a.degree() != 0 && b.degree() != 0){
+    while (a.degree() > Natural(0) && b.degree() > Natural(0)){
         if (a.degree() > b.degree())
             a = a % b;
         else
@@ -239,4 +263,3 @@ Polynomial normalize(const Polynomial& poly){
     //Значит, если poly разделить на НОД(poly, poly') то останутся только его корни кратности 1  
     return poly / gcf(poly, derivative(poly));
 }
-
