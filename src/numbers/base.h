@@ -9,18 +9,10 @@
 #include <vector>
 
 
-namespace std
-{
-    namespace rel_ops
-    {
-        struct make_rel_ops_work
-        {
-        };
-    }
-}
 using namespace std;
+using namespace std::rel_ops;
 
-class Digit : private rel_ops::make_rel_ops_work
+class Digit
 {
 public:
     Digit(int d);

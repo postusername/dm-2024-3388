@@ -2,7 +2,7 @@
 #include "base.h"
 
 
-class Natural : public NumberInterface<vector<Digit>>, private rel_ops::make_rel_ops_work
+class Natural : public NumberInterface<vector<Digit>>
 {
 public:
     Natural() = default;

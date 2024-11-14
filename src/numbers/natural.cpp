@@ -30,7 +30,7 @@ string Natural::to_string(uint64_t num)
 string Natural::to_string(vector<Digit> num)
 {
     string str = "";
-    for (std::vector<Digit>::reverse_iterator it = num.rbegin(); it != num.rend(); ++it)
+    for (auto it = num.rbegin(); it != num.rend(); ++it)
         str += std::to_string(it->d);
     return str;
 }
