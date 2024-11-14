@@ -1,4 +1,7 @@
-//ну короче тут еще натуральные целые и рациональные надо заинклудить даб даб даб
+
+#pragma once
+
+#include "base.h"
 #include "natural.h"
 #include "integer.h"
 #include "rational.h"
@@ -19,12 +22,13 @@
 
 class Polynomial : public NumberInterface<std::map<Natural, Rational>>{
     public:
+        // using NumberInterface<std::map<Natural, Rational>>::NumberInterface;
         Polynomial(const Rational num = Rational(Integer(0)));
         Polynomial(std::initializer_list<std::pair<Natural, Rational>> num);
-        Polynomial(std::string str) : NumberInterface(str);
-        std::string Polynomial::to_string() const;
+        Polynomial(std::string str);
+        std::string to_string() const override;
 
-        std::map<Natural, Rational>* from_string(std::string str);
+        std::map<Natural, Rational> from_string(std::string str) override;
 
         Polynomial& operator+=(const Polynomial& other);
         Polynomial& operator+=(const Rational& other);
@@ -36,6 +40,7 @@ class Polynomial : public NumberInterface<std::map<Natural, Rational>>{
         friend const Polynomial operator-(const Polynomial& left, const Polynomial& right);
         friend const Polynomial operator-(const Polynomial& poly,const Rational& num);
         friend const Polynomial operator-(const Rational& num,const Polynomial& poly);
+        friend const bool operator==(const Polynomial& left,const Polynomial& right);
         Polynomial& operator*=(const Rational& num);
         friend const Polynomial operator*(const Polynomial& poly, const Rational& num);
         friend const Polynomial operator*(const Rational& num, const Polynomial& poly);
@@ -54,6 +59,3 @@ class Polynomial : public NumberInterface<std::map<Natural, Rational>>{
 };
 Polynomial gcf(Polynomial a, Polynomial b);
 Polynomial normalize(const Polynomial& X);
-
-
-
