@@ -32,6 +32,7 @@ Natural Integer::abs() const {
 
 // SGN_Z_D Ижболдин А.В 3388
 int Integer::sign() const {
+  if (data.second == Natural(0)) return 0;
   return data.first ? -1 : 1;
 }
 
