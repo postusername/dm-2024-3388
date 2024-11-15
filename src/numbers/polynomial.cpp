@@ -41,7 +41,7 @@ std::string Polynomial::to_string() {
     bool first = true;
 
     // Обратный обход terms для вывода от старших к младшим степеням
-    for (auto it = this->data.rbegin(); it != this->data.rend(); ++it) {
+    for (auto it = this->data.rbegin(); ; ++it) {
         std::pair<Natural, Rational> term = *it;
 
         if (!first) {
@@ -53,6 +53,8 @@ std::string Polynomial::to_string() {
             result += "[" + term.second.get_numerator().to_string() + ", " + term.first.to_string() + "]";
         else
             result += "[" + term.second.to_string() + ", " + term.first.to_string() + "]";
+        
+        if (it == this->data.rend()) break;
     }
 
     result += "]";
