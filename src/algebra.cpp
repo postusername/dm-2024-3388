@@ -2,24 +2,70 @@
 #include "parser.h"
 #include "tree.cpp"
 
-Natural nat;
-Integer intg;
-Rational rat;
-Polynomial poly;
 
 std::map<std::string, std::function<Natural(std::string, std::string)>> func_map_nat = {
+    {"COM_NN_D", [](std::string arg1, std::string arg2) { return Natural(arg1).compare(Natural(arg2)); }},
+    {"NZER_N_B", [](std::string arg1, std::string arg2) { return Natural(Natural(arg1).is_zero()); }},
+    {"INT_Q_B", [](std::string arg1, std::string arg2) { return Natural(Rational(arg1).is_int()); }},
     {"ADD_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) + Natural(arg2); }},
     {"SUB_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) - Natural(arg2); }},
     {"MUL_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) * Natural(arg2); }},
     {"MOD_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) % Natural(arg2); }},
     {"DIV_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) / Natural(arg2); }},
     {"ADD_1N_N", [](std::string arg1, std::string arg2) { return Natural(arg1)++ ; }},
-    {"SUB_NDN_N", [](std::string arg1, std::string arg2) { return nat.sub_nmul(Natural(arg1), Digit(arg2)); }},
-    {"MUL_ND_N", [](std::string arg1, std::string arg2) { return Natural(arg1) * Digit(arg2); }},
+    {"SUB_NDN_N", [](std::string arg1, std::string arg2) { return Natural(arg1).sub_nmul(Natural(arg1), Digit(arg2)); }},
+    {"MUL_ND_N", [](std::string arg1, std::string arg2) {
+        try { return Natural(arg1) * Digit(arg2); } 
+        catch (std::invalid_argument& e) { return Digit(arg1) * Natural(arg2);}
+    }},
     {"MUL_Nk_N", [](std::string arg1, std::string arg2) { return Natural(arg1).mul_pow10(Natural(arg2)); }},
     {"GCF_NN_N", [](std::string arg1, std::string arg2) { return gcf(Natural(arg1), Natural(arg2)); }},
     {"LCM_NN_N", [](std::string arg1, std::string arg2) { return lcm(Natural(arg1), Natural(arg2)); }},
+    {"ABS_Z_N", [](std::string arg1, std::string arg2) { return (Integer(arg1)).abs(); }},
+    {"TRANS_Z_N", [](std::string arg1, std::string arg2) { return static_cast<Natural>(Integer(arg1)); }},
+    {"DEG_P_N", [](std::string arg1, std::string arg2) { return (Polynomial(arg1)).degree(); }},
+    {"DIV_NN_Dk", [](std::string arg1, std::string arg2) { return Natural(arg1).div_nmul(Natural(arg1), Natural(arg2)); }},
 };
+
+std::map<std::string, std::function<Integer(std::string, std::string)>> func_map_int = {
+    {"SGN_Z_D", [](std::string arg1, std::string arg2) { return Integer(arg1).sign(); }},
+    {"ADD_ZZ_Z", [](std::string arg1, std::string arg2) { return Integer(arg1) + Integer(arg2); }},
+    {"SUB_ZZ_Z", [](std::string arg1, std::string arg2) { return Integer(arg1) - Integer(arg2); }},
+    {"MUL_ZZ_Z", [](std::string arg1, std::string arg2) { return Integer(arg1) * Integer(arg2); }},
+    {"DIV_ZZ_Z", [](std::string arg1, std::string arg2) { return Integer(arg1) / Integer(arg2); }},
+    {"MOD_ZZ_Z", [](std::string arg1, std::string arg2) { return Integer(arg1) % Integer(arg2); }},
+    {"MUL_ZM_Z", [](std::string arg1, std::string arg2) { return -Integer(arg1); }},
+    {"TRANS_Q_Z", [](std::string arg1, std::string arg2) { return static_cast<Integer>(Rational(arg1)); }},
+    {"TRANS_N_Z", [](std::string arg1, std::string arg2) { return static_cast<Integer>(Natural(arg1)); }},
+};
+
+std::map<std::string, std::function<Rational(std::string, std::string)>> func_map_rat = {
+    {"ADD_QQ_Q", [](std::string arg1, std::string arg2) { return Rational(arg1) + Rational(arg2); }},
+    {"SUB_QQ_Q", [](std::string arg1, std::string arg2) { return Rational(arg1) - Rational(arg2); }},
+    {"MUL_QQ_Q", [](std::string arg1, std::string arg2) { return Rational(arg1) * Rational(arg2); }},
+    {"DIV_QQ_Q", [](std::string arg1, std::string arg2) { return Rational(arg1) / Rational(arg2); }},
+    {"TRANS_Z_Q", [](std::string arg1, std::string arg2) { return static_cast<Rational>(Integer(arg1)); }},
+    {"RED_Q_Q", [](std::string arg1, std::string arg2) { return Rational(arg1).reduce(); }},
+    {"LED_P_Q", [](std::string arg1, std::string arg2) { return Polynomial(arg1).lead(); }},
+    {"FAC_P_Q", [](std::string arg1, std::string arg2) { return Polynomial(arg1).canonical(); }}
+};
+
+std::map<std::string, std::function<Polynomial(std::string, std::string)>> func_map_poly = {
+    {"ADD_PP_P", [](std::string arg1, std::string arg2) { return Polynomial(arg1) + Polynomial(arg2); }},
+    {"SUB_PP_P", [](std::string arg1, std::string arg2) { return Polynomial(arg1) - Polynomial(arg2); }},
+    {"MUL_PP_P", [](std::string arg1, std::string arg2) { return Polynomial(arg1) * Polynomial(arg2); }},
+    {"DIV_PP_P", [](std::string arg1, std::string arg2) { return Polynomial(arg1) / Polynomial(arg2); }},
+    {"MOD_PP_P", [](std::string arg1, std::string arg2) { return Polynomial(arg1) % Polynomial(arg2); }},
+    {"MUL_PQ_P", [](std::string arg1, std::string arg2) { 
+        try { return Polynomial(arg1) * Rational(arg2); }
+        catch (std::invalid_argument& e) { return Rational(arg1) * Polynomial(arg2);}
+    }},
+    {"MUL_Pxk_P", [](std::string arg1, std::string arg2) { return Polynomial(arg1).mul_powX(Natural(arg2)); }},
+    {"GCF_PP_P", [](std::string arg1, std::string arg2) { return gcf(Polynomial(arg1), Polynomial(arg2)); }},
+    {"DER_P_P", [](std::string arg1, std::string arg2) { return derivative(Polynomial(arg1)); }},
+    {"NMR_P_P", [](std::string arg1, std::string arg2) { return normalize(Polynomial(arg1)); }}
+};
+
 
 template <typename T>
 T perform_operation(const T& left, const T& right, const std::string& op) {
@@ -140,11 +186,27 @@ ASTNode* reduce(ASTNode* node, std::map<std::string, std::string>* vars, Parser 
         return node;
 
     } else if (node->type == TokenType::Function) {
-        if (func_map_nat.find(node->fn_name) != func_map_nat.end()){
-            Natural* result = new Natural(func_map_nat[node->fn_name](node->fn_arg1, node->fn_arg2));
+        std::string function_name = *static_cast<std::string*>(node->value);
+        std::string left_argument = *static_cast<std::string*>(node->left->value);
+        std::string rght_argument = (node->right == nullptr) ? "" : *static_cast<std::string*>(node->right->value);
+        if (func_map_nat.find(function_name) != func_map_nat.end()) {
+            Natural* result = new Natural(func_map_nat[function_name](left_argument, rght_argument));
             node->value = new std::string(result->to_string());
             node->type = TokenType::Natural;
-        }
+        } else if (func_map_int.find(function_name) != func_map_int.end()) {
+            Integer* result = new Integer(func_map_int[function_name](left_argument, rght_argument));
+            node->value = new std::string(result->to_string());
+            node->type = TokenType::Integer;
+        } else if (func_map_rat.find(function_name) != func_map_rat.end()) {
+            Rational* result = new Rational(func_map_rat[function_name](left_argument, rght_argument));
+            node->value = new std::string(result->to_string());
+            node->type = TokenType::Rational;
+        } else if (func_map_poly.find(function_name) != func_map_poly.end()) {
+            Polynomial* result = new Polynomial(func_map_poly[function_name](left_argument, rght_argument));
+            node->value = new std::string(result->to_string());
+            node->type = TokenType::Polynomial;
+        } else
+            throw std::runtime_error("NameError: function '" + function_name + "' is not defined");
         return node;
     }
     return node;
