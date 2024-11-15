@@ -49,7 +49,27 @@ class Parser
 {
 private:
     const std::vector<std::string> func_names = {
-        "COM_NN_D"
+        "COM_NN_D", "NZER_N_B", "MUL_NN_N",
+        "ADD_1N_N", "ADD_NN_N", "MOD_NN_N",
+        "LCM_NN_N", "GCF_NN_N", "DIV_NN_N",
+        "MUL_ND_N", "MUL_Nk_N", "DIV_NN_Dk",
+        "SUB_NDN_N", "SUB_NN_N",
+
+        
+        "TRANS_N_Z", "MOD_ZZ_Z",
+        "ABS_Z_N","SGN_Z_D","MUL_ZM_Z","TRANS_Z_N",
+        "ADD_ZZ_Z","SUB_ZZ_Z","MUL_ZZ_Z","DIV_ZZ_Z",
+        
+
+        "TRANS_Z_Q", "RED_Q_Q", "INT_Q_B", "TRANS_Q_Z",
+        "ADD_QQ_Q", "SUB_QQ_Q", "MUL_QQ_Q", "DIV_QQ_Q",
+        
+        
+        "ADD_PP_P", "MOD_PP_P", "GCF_PP_P", "DER_P_P",
+        "SUB_PP_P", "MUL_PQ_P", "MUL_Pxk_P", "LED_P_Q",
+        "DEG_P_N", "FAC_P_Q", "MUL_PP_P", "DIV_PP_P",
+        "NMR_P_P"
+
     };
 
     bool is_contains_brackets(const std::string &token);

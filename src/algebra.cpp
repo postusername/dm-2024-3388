@@ -2,6 +2,36 @@
 #include "parser.h"
 #include "tree.cpp"
 
+Natural nat;
+Integer intg;
+Rational rat;
+Polynomial poly;
+
+std::map<std::string, std::function<Natural(std::string, std::string)>> func_map_nat = {
+    {"ADD_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) + Natural(arg2); }},
+    {"SUB_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) - Natural(arg2); }},
+    {"MUL_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) * Natural(arg2); }},
+    {"MOD_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) % Natural(arg2); }},
+    {"DIV_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) / Natural(arg2); }},
+    {"ADD_1N_N", [](std::string arg1, std::string arg2) { return Natural(arg1)++ ; }},
+    {"SUB_NDN_N", [](std::string arg1, std::string arg2) { return nat.sub_nmul(Natural(arg1), Digit(arg2)); }},
+    {"MUL_ND_N", [](std::string arg1, std::string arg2) {
+        try { return Natural(arg1) * Digit(arg2); } 
+        catch (std::invalid_argument& e) { return Digit(arg1) * Natural(arg2);}
+    }},
+    {"MUL_Nk_N", [](std::string arg1, std::string arg2) { return nat.mul_pow10(Natural(arg1)); }},
+    {"GCF_NN_N", [](std::string arg1, std::string arg2) { return gcf(Natural(arg1), Natural(arg2)); }},
+    {"LCM_NN_N", [](std::string arg1, std::string arg2) { return lcm(Natural(arg1), Natural(arg2)); }},
+};
+
+template <typename T>
+T perform_operation(const T& left, const T& right, const std::string& op) {
+    if (op == "+") return left + right;
+    if (op == "-") return left - right;
+    if (op == "*") return left * right;
+    if (op == "/") return left / right;
+    throw std::invalid_argument("Unsupported operation: " + op);
+}
 
 // Под конец в node->value будет лежать результат вычисления в виде std::string
 ASTNode* reduce(ASTNode* node, std::map<std::string, std::string>* vars, Parser parser) {
@@ -41,15 +71,66 @@ ASTNode* reduce(ASTNode* node, std::map<std::string, std::string>* vars, Parser 
         node->type = t.type;
         node->value = &vars->at(var_name);
         return node;
-    } else if (node->type == TokenType::Function) {
-        // Логика обработки функций
-        return node;
+
     } else if (node->type == TokenType::BinaryOperator) {
-        // Логика обработки бинарных операторов
+        int max_type = std::max((int)node->left->type, (int)node->right->type);
+        int min_type = std::min((int)node->left->type, (int)node->right->type);
+        std::string op = node->token;
+        node->type = (TokenType)max_type;
+
+        switch (node->type) {   
+            case TokenType::Polynomial:
+            {
+                auto result = new Polynomial(perform_operation(
+                    *static_cast<Polynomial*>(node->left->value),
+                    *static_cast<Polynomial*>(node->right->value),
+                    op
+                ));
+                node->value = new std::string(result->to_string());
+                break;
+            }
+            case TokenType::Rational:
+            {
+                auto result = new Rational(perform_operation(
+                    *static_cast<Rational*>(node->left->value),
+                    *static_cast<Rational*>(node->right->value),
+                    op
+                ));
+                node->value = new std::string(result->to_string());
+                break;
+            }
+            case TokenType::Integer:
+            {
+                auto result = new Integer(perform_operation(
+                    *static_cast<Integer*>(node->left->value),
+                    *static_cast<Integer*>(node->right->value),
+                    op
+                ));
+                node->value = new std::string(result->to_string());
+                break;
+            }
+            case TokenType::Natural:
+            {
+                auto result = new Integer(perform_operation(
+                    *static_cast<Integer*>(node->left->value),
+                    *static_cast<Integer*>(node->right->value),
+                    op
+                ));
+                node->value = new std::string(result->to_string());
+                break;
+            }
+        }
+        return node;
+
+    } else if (node->type == TokenType::Function) {
+        if (func_map_nat.find(node->fn_name) != func_map_nat.end()){
+            Natural* result = new Natural(func_map_nat[node->fn_name](node->fn_arg1, node->fn_arg2));
+            node->value = new std::string(result->to_string());
+            node->type = TokenType::Natural;
+        }
         return node;
     }
-
-    // return node;
+    return node;
 }
 
 

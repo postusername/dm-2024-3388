@@ -5,6 +5,7 @@
 #include <string>
 #include <tuple>
 #include <stdexcept>
+
 #include "parser.h"
 
 
@@ -69,6 +70,10 @@ public:
     ASTNode* left = nullptr;
     ASTNode* right = nullptr;
 
+    std::string fn_name;
+    std::string fn_arg1;
+    std::string fn_arg2;
+
     ASTNode(std::vector<Token>::iterator t,
             std::vector<Token>::iterator start,
             std::vector<Token>::iterator end) {
@@ -76,6 +81,10 @@ public:
         type = (*t).type;
 
         auto [function_name, function_arg1, function_arg2] = splitByBracketsAndComma(token);
+
+        fn_name = function_name;
+        fn_arg1 = function_arg1;
+        fn_arg2 = function_arg2;
 
         switch (this->type) {
             case TokenType::Natural:
