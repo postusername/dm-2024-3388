@@ -29,7 +29,7 @@ public:
   Integer(std::string str);
 
   // Метод для преобразования строки в пару <bool, Natural>
-  std::pair<bool, Natural> from_string(std::string str) override;
+  std::pair<bool, Natural> from_string(std::string str);
 
   std::string to_string();
 

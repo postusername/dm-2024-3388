@@ -32,7 +32,9 @@ string Natural::to_string(vector<Digit> num)
     string str = "";
     for (auto it = num.rbegin(); ; ++it) {
         str += std::to_string(it->d);
-        if (it == num.rend()) break;
+
+        if (it + 1 == num.rend())
+            break;
     }
     return str;
 }

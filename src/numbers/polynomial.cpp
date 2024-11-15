@@ -54,7 +54,7 @@ std::string Polynomial::to_string() {
         else
             result += "[" + term.second.to_string() + ", " + term.first.to_string() + "]";
         
-        if (it == this->data.rend()) break;
+        if (it + 1 == this->data.rend()) break;
     }
 
     result += "]";
