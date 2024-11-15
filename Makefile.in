@@ -1,23 +1,45 @@
 CXX = @CXX@
-CXXFLAGS = -g --debug -Weffc++ -Wconversion -std=c++17
+CXXFLAGS = -g --debug -Wconversion -std=c++17
 
 
 all: algebra tests
 
-algebra: build demo.o function.o
-	$(CXX) $(CXXFLAGS) build/obj/demo.o build/obj/function.o -o build/algebra
+algebra: build algebra.o parser.o base.o natural.o integer.o rational.o polynomial.o
+	$(CXX) $(CXXFLAGS) build/obj/algebra.o build/obj/parser.o build/obj/tree.o build/obj/base.o build/obj/natural.o build/obj/integer.o build/obj/rational.o build/obj/polynomial.o -o build/algebra
 
-tests: build tests.o function.o
-	$(CXX) $(CXXFLAGS) build/obj/tests.o build/obj/function.o -o build/tests
+tests: build tests.o base.o natural.o integer.o rational.o polynomial.o
+	$(CXX) $(CXXFLAGS) build/obj/test_natural.o build/obj/base.o build/obj/natural.o -o build/test_natural
+	$(CXX) $(CXXFLAGS) build/obj/test_integer.o build/obj/base.o build/obj/natural.o build/obj/integer.o -o build/test_integer
+	$(CXX) $(CXXFLAGS) build/obj/test_rational.o build/obj/base.o build/obj/natural.o build/obj/integer.o build/obj/rational.o -o build/test_rational
+	$(CXX) $(CXXFLAGS) build/obj/test_polynomial.o build/obj/base.o build/obj/natural.o build/obj/integer.o build/obj/rational.o build/obj/polynomial.o -o build/test_polynomial
 
-demo.o:
-	$(CXX) $(CXXFLAGS) -c src/demo.cpp -Isrc -o build/obj/demo.o
+algebra.o:
+	$(CXX) $(CXXFLAGS) -c src/algebra.cpp -Isrc -o build/obj/algebra.o
 
-function.o:
-	$(CXX) $(CXXFLAGS) -c src/function.cpp -Isrc -o build/obj/function.o
+parser.o:
+	$(CXX) $(CXXFLAGS) -c src/parser.cpp -Isrc -o build/obj/parser.o
+	$(CXX) $(CXXFLAGS) -c src/tree.cpp -Isrc -o build/obj/tree.o
 
 tests.o:
-	$(CXX) $(CXXFLAGS) -c tests/demo.cpp -Isrc -o build/obj/tests.o
+	$(CXX) $(CXXFLAGS) -c tests/test_natural.cpp -Isrc -o build/obj/test_natural.o
+	$(CXX) $(CXXFLAGS) -c tests/test_integer.cpp -Isrc -o build/obj/test_integer.o
+	$(CXX) $(CXXFLAGS) -c tests/test_rational.cpp -Isrc -o build/obj/test_rational.o
+	$(CXX) $(CXXFLAGS) -c tests/test_polynomial.cpp -Isrc -o build/obj/test_polynomial.o
+
+base.o:
+	$(CXX) $(CXXFLAGS) -c src/numbers/base.cpp -Isrc -o build/obj/base.o
+
+natural.o:
+	$(CXX) $(CXXFLAGS) -c src/numbers/natural.cpp -Isrc -o build/obj/natural.o
+
+integer.o:
+	$(CXX) $(CXXFLAGS) -c src/numbers/integer.cpp -Isrc -o build/obj/integer.o
+
+rational.o:
+	$(CXX) $(CXXFLAGS) -c src/numbers/rational.cpp -Isrc -o build/obj/rational.o
+
+polynomial.o:
+	$(CXX) $(CXXFLAGS) -c src/numbers/polynomial.cpp -Isrc -o build/obj/polynomial.o
 
 build:
 	mkdir build
