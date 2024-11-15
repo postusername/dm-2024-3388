@@ -159,9 +159,13 @@ public:
     std::vector<Token>::iterator find_token_type(std::vector<Token>::iterator start,
                                                  std::vector<Token>::iterator end,
                                                  TokenType type) {
-        for (auto it = start; it != end; ++it) {
+        for (auto it = end - 1; ; --it) {
             if (it->type == type) {
                 return it;
+            }
+
+            if (it == start) {
+                break;
             }
         }
 

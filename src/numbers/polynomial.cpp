@@ -97,7 +97,6 @@ Polynomial& Polynomial::operator-=(const Polynomial& other){
     for (const auto& [deg, val] : other.data){
         this->data[deg] = this->data[deg] - val;
         //если получили коэффициент 0, то удаляем его, если это не нулевая степень(чтобы был многочлен "0")
-        // if (deg > Natural(0) && this->data[deg] == Rational(0)) - ВЕРНУТЬ ВМЕСТО СЛЕДУЮЩЕЙ СТРОКИ ПОСЛЕ ИСПРАВЛЕНИЯ -0 != 0!!!!1!!!1!11!!!!!!!!!
         if (deg > Natural(0) && (this->data[deg] == Rational(0) || this->data[deg] == Rational({Integer("-0"),Natural(1)})))
             this->data.erase(deg); 
     }

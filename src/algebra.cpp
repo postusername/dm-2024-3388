@@ -68,12 +68,19 @@ std::map<std::string, std::function<Polynomial(std::string, std::string)>> func_
 };
 
 
-template <typename T>
-T perform_operation(const T& left, const T& right, const std::string& op) {
-    if (op == "+") return left + right;
-    if (op == "-") return left - right;
-    if (op == "*") return left * right;
-    if (op == "/") return left / right;
+template <typename T, typename Q>
+T perform_operation(const T& left, const Q& right, const std::string& op) {
+    if constexpr (std::is_same<T, Polynomial>::value && std::is_same<Q, Rational>::value) {
+        if (op == "+") return left + right;
+        if (op == "-") return left - right;
+        if (op == "*") return left * right;
+        if (op == "/") return left * Rational(1, right);
+    } else {
+        if (op == "+") return left + right;
+        if (op == "-") return left - right;
+        if (op == "*") return left * right;
+        if (op == "/") return left / right;
+    }
     throw std::invalid_argument("Unsupported operation: " + op);
 }
 
@@ -220,7 +227,11 @@ int main() {
     while (true) {
         std::cout << "algebra> ";
         std::string s; std::getline(std::cin, s);
-        
+        if (s == "quit") {
+            std::cout << "Bye!" << std::endl;
+            break;
+        }
+
         try {
             auto tokens = parser.tokenize(s);
             auto root = new ASTNode(tokens.begin(), tokens.end());
