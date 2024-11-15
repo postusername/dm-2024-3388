@@ -27,10 +27,28 @@ inline std::string strip(const std::string &s) {
     return s.substr(start, end - start);
 }
 
+inline size_t split_args(std::string input) {
+    int open_parentheses = 0;  // Считаем количество открытых круглых скобок
+
+    // Проходим по строке и ищем первую запятую, которая не внутри скобок
+    for (size_t i = 0; i < input.size(); ++i) {
+        if (input[i] == '(') {
+            open_parentheses++;  // Встречаем открывающую скобку
+        } else if (input[i] == ')') {
+            open_parentheses--;  // Встречаем закрывающую скобку
+        } else if (input[i] == ',' && open_parentheses == 0) {
+            // Если встретили запятую и не находимся внутри скобок
+            return i;
+        }
+    }
+
+    return std::string::npos;  // Если запятая не найдена, возвращаем npos
+}
+
 
 inline std::tuple<std::string, std::string, std::string> splitByBracketsAndComma(const std::string &input) {
     size_t open_bracket_pos = input.find('(');
-    size_t close_bracket_pos = input.find(')');
+    size_t close_bracket_pos = input.rfind(')');
 
     // Проверка на наличие открывающей и закрывающей скобки
     if (open_bracket_pos == std::string::npos || close_bracket_pos == std::string::npos || open_bracket_pos >= close_bracket_pos) {
@@ -44,7 +62,7 @@ inline std::tuple<std::string, std::string, std::string> splitByBracketsAndComma
     std::string inside_brackets = input.substr(open_bracket_pos + 1, close_bracket_pos - open_bracket_pos - 1);
     
     // Проверка на наличие запятой внутри скобок
-    size_t comma_pos = inside_brackets.find(',');
+    size_t comma_pos = split_args(inside_brackets);
     std::string part_inside_first, part_inside_second;
 
     if (comma_pos == std::string::npos) {
