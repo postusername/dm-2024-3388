@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -42,7 +43,7 @@ public:
     }
     virtual T from_string(string str) = 0;
     virtual string to_string() = 0;
-    friend ostream &operator<<(ostream &stream, NumberInterface<T> num)
+    friend ostream &operator<<(ostream &stream, NumberInterface<T>& num)
     {
         stream << num.to_string();
         return stream;

@@ -15,11 +15,8 @@ std::map<std::string, std::function<Natural(std::string, std::string)>> func_map
     {"DIV_NN_N", [](std::string arg1, std::string arg2) { return Natural(arg1) / Natural(arg2); }},
     {"ADD_1N_N", [](std::string arg1, std::string arg2) { return Natural(arg1)++ ; }},
     {"SUB_NDN_N", [](std::string arg1, std::string arg2) { return nat.sub_nmul(Natural(arg1), Digit(arg2)); }},
-    {"MUL_ND_N", [](std::string arg1, std::string arg2) {
-        try { return Natural(arg1) * Digit(arg2); } 
-        catch (std::invalid_argument& e) { return Digit(arg1) * Natural(arg2);}
-    }},
-    {"MUL_Nk_N", [](std::string arg1, std::string arg2) { return nat.mul_pow10(Natural(arg1)); }},
+    {"MUL_ND_N", [](std::string arg1, std::string arg2) { return Natural(arg1) * Digit(arg2); }},
+    {"MUL_Nk_N", [](std::string arg1, std::string arg2) { return Natural(arg1).mul_pow10(Natural(arg2)); }},
     {"GCF_NN_N", [](std::string arg1, std::string arg2) { return gcf(Natural(arg1), Natural(arg2)); }},
     {"LCM_NN_N", [](std::string arg1, std::string arg2) { return lcm(Natural(arg1), Natural(arg2)); }},
 };
@@ -32,6 +29,25 @@ T perform_operation(const T& left, const T& right, const std::string& op) {
     if (op == "/") return left / right;
     throw std::invalid_argument("Unsupported operation: " + op);
 }
+
+
+template <typename T>
+T* upper_cast(void* ptr, TokenType source_type, TokenType result_type) {
+    if (source_type > result_type)
+        throw std::invalid_argument("EvalError: Cannot implicit cast from upper type to lower type!");
+    
+    if constexpr (std::is_same<T, Rational>::value) {
+        if (source_type == TokenType::Rational)
+            return new Rational(*static_cast<std::string*>(ptr));
+        return new T(Integer(*static_cast<std::string*>(ptr)));
+    } else if constexpr (std::is_same<T, Polynomial>::value) {
+        if (source_type == TokenType::Polynomial)
+            return new Polynomial(*static_cast<std::string*>(ptr));
+        return new T(Rational(*static_cast<std::string*>(ptr)));
+    } else
+        return new T(*static_cast<std::string*>(ptr));
+}
+
 
 // Под конец в node->value будет лежать результат вычисления в виде std::string
 ASTNode* reduce(ASTNode* node, std::map<std::string, std::string>* vars, Parser parser) {
@@ -73,8 +89,7 @@ ASTNode* reduce(ASTNode* node, std::map<std::string, std::string>* vars, Parser 
         return node;
 
     } else if (node->type == TokenType::BinaryOperator) {
-        int max_type = std::max((int)node->left->type, (int)node->right->type);
-        int min_type = std::min((int)node->left->type, (int)node->right->type);
+        TokenType max_type = TokenType(std::max((int)node->left->type, (int)node->right->type));
         std::string op = node->token;
         node->type = (TokenType)max_type;
 
@@ -82,8 +97,8 @@ ASTNode* reduce(ASTNode* node, std::map<std::string, std::string>* vars, Parser 
             case TokenType::Polynomial:
             {
                 auto result = new Polynomial(perform_operation(
-                    *static_cast<Polynomial*>(node->left->value),
-                    *static_cast<Polynomial*>(node->right->value),
+                    *upper_cast<Polynomial>(node->left->value, node->left->type, max_type),
+                    *upper_cast<Polynomial>(node->right->value, node->right->type, max_type),
                     op
                 ));
                 node->value = new std::string(result->to_string());
@@ -92,8 +107,8 @@ ASTNode* reduce(ASTNode* node, std::map<std::string, std::string>* vars, Parser 
             case TokenType::Rational:
             {
                 auto result = new Rational(perform_operation(
-                    *static_cast<Rational*>(node->left->value),
-                    *static_cast<Rational*>(node->right->value),
+                    *upper_cast<Rational>(node->left->value, node->left->type, max_type),
+                    *upper_cast<Rational>(node->right->value, node->right->type, max_type),
                     op
                 ));
                 node->value = new std::string(result->to_string());
@@ -102,8 +117,8 @@ ASTNode* reduce(ASTNode* node, std::map<std::string, std::string>* vars, Parser 
             case TokenType::Integer:
             {
                 auto result = new Integer(perform_operation(
-                    *static_cast<Integer*>(node->left->value),
-                    *static_cast<Integer*>(node->right->value),
+                    *upper_cast<Integer>(node->left->value, node->left->type, max_type),
+                    *upper_cast<Integer>(node->right->value, node->right->type, max_type),
                     op
                 ));
                 node->value = new std::string(result->to_string());
@@ -111,9 +126,9 @@ ASTNode* reduce(ASTNode* node, std::map<std::string, std::string>* vars, Parser 
             }
             case TokenType::Natural:
             {
-                auto result = new Integer(perform_operation(
-                    *static_cast<Integer*>(node->left->value),
-                    *static_cast<Integer*>(node->right->value),
+                auto result = new Natural(perform_operation(
+                    *upper_cast<Natural>(node->left->value, node->left->type, max_type),
+                    *upper_cast<Natural>(node->right->value, node->right->type, max_type),
                     op
                 ));
                 node->value = new std::string(result->to_string());
