@@ -77,12 +77,13 @@ Polynomial::Polynomial(std::string str){
 /* ADD_PP_P Лутфулин Д. А. 3388 */
 Polynomial& Polynomial::operator+=(const Polynomial& other){
     //проходимся по мономам добавляемого многочлена и складываем соответствующие коэффициенты
-    for (const auto& [deg, val] : other.data){
+    for (const auto& [deg, val] : other.data) {
         this->data[deg] = this->data[deg] + val;
-        //если выходит что текущий коэф. стал нулём - удаляем его
-        if (deg > Natural(0) && (this->data[deg] == Rational(0) || this->data[deg] == Rational({Integer("-0"),Natural(1)})))
-            this->data.erase(deg); 
-    }
+        //если получили коэффициент 0, то удаляем его, если это не нулевая степень (чтобы был многочлен "0")
+        if (deg != Natural(0) && this->data[deg] == Rational(0, 1))
+            this->data.erase(deg);
+    }   
+    
     return *this;
 }
 
@@ -96,9 +97,9 @@ Polynomial& Polynomial::operator+=(const Rational& num){
 Polynomial& Polynomial::operator-=(const Polynomial& other){
     for (const auto& [deg, val] : other.data){
         this->data[deg] = this->data[deg] - val;
-        //если получили коэффициент 0, то удаляем его, если это не нулевая степень(чтобы был многочлен "0")
-        if (deg > Natural(0) && (this->data[deg] == Rational(0) || this->data[deg] == Rational({Integer("-0"),Natural(1)})))
-            this->data.erase(deg); 
+        //если получили коэффициент 0, то удаляем его, если это не нулевая степень (чтобы был многочлен "0")
+        if (deg != Natural(0) && this->data[deg] == Rational(0, 1))
+            this->data.erase(deg);
     }
     return *this;
 }

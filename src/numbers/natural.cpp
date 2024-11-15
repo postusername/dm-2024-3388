@@ -7,6 +7,14 @@ ostream &operator<<(ostream &stream, Natural &num)
     return stream;
 }
 
+Natural::Natural(uint64_t num) {
+    if (num == 0)
+        this->data.emplace_back(0);
+    while (num > 0) {
+        this->data.emplace_back(num % (uint64_t)10);
+        num /= 10;
+    }
+}
 
 vector<Digit> Natural::from_string(string str) {
     std::vector<Digit> data;
@@ -134,24 +142,21 @@ Natural Natural::operator++(int)
 // ADD_NN_N Беннер В. А. 3388
 const Natural operator+(const Natural &left, const Natural &right)
 {
-    Natural l(0), r(0);
-    if (left.data.size() < right.data.size())
+    bool use_left = (left.compare(right) == 2);
+    Natural result = (use_left) ? left : right;
+
+    // Прибавляем к большему
+    const size_t size = (use_left) ? right.data.size() : left.data.size();
+    for (size_t i = 0; i < size; ++i)
     {
-        l = right;
-        r = left;
+        if (use_left)
+            result.data.at(i) = result.data.at(i) + right.data.at(i); // Суммируем разряды
+        else
+            result.data.at(i) = result.data.at(i) + left.data.at(i);
+        result.carry_flex(i);                            // Переносим разряды
     }
-    else
-    {
-        l = left;
-        r = right;
-    } // Прибавляем к большему
-    for (size_t i = 0; i < r.data.size(); ++i)
-    {
-        l.data.at(i) = l.data.at(i) + r.data.at(i); // Суммируем разряды
-        l.carry_flex(i);                            // Переносим разряды
-    }
-    l.zero_flex(); // Убираем не значащие нули
-    return l;
+    result.zero_flex(); // Убираем не значащие нули
+    return result;
 }
 
 

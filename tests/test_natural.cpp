@@ -88,9 +88,9 @@ string test_subtract()
 
 string test_multiply_digit()
 {
-    assert(Natural(22) * Natural(2) == Natural(44));
-    assert(Natural(0) * Natural(2) == Natural(0));
-    assert(Natural(12) * Natural(1) == Natural(12));
+    assert(Natural(22) * Digit(2) == Natural(44));
+    assert(Natural(0) * Digit(2) == Natural(0));
+    assert(Natural(12) * Digit(1) == Natural(12));
 
     return "PASSED";
 }

@@ -168,13 +168,13 @@ const Rational operator/(Rational left, Rational right) {
 // Метод для приведения двух дробей к общему знаменателю 
 std::tuple<Integer, Integer, Natural> Rational::get_common_numerators_and_denominator(
     const Rational& left, const Rational& right) {
-  // Получаем НОК знаменателей
-  Natural lcm_denominator = lcm(right.data.second, left.data.second);
+  // Получаем новый знаменательы
+  Natural new_denominator = right.data.second * left.data.second;
   // Умножаем числители на множители для получения общего знаменателя дробей
-  Integer left_numerator = left.data.first * Integer(lcm_denominator / left.data.second);
-  Integer right_numerator = right.data.first * Integer(lcm_denominator / right.data.second);
+  Integer left_numerator = left.data.first * Integer(new_denominator / left.data.second);
+  Integer right_numerator = right.data.first * Integer(new_denominator / right.data.second);
   // Возвращаем числители и общий знаменатель 
-  return {left_numerator, right_numerator, lcm_denominator};
+  return {left_numerator, right_numerator, new_denominator};
 }
 
 ostream &operator<<(ostream &stream, Rational num) {
