@@ -43,7 +43,9 @@ T* upper_cast(void* ptr, TokenType source_type, TokenType result_type) {
     } else if constexpr (std::is_same<T, Polynomial>::value) {
         if (source_type == TokenType::Polynomial)
             return new Polynomial(*static_cast<std::string*>(ptr));
-        return new T(Rational(*static_cast<std::string*>(ptr)));
+        if (source_type == TokenType::Rational)
+            return new Polynomial(Rational(*static_cast<std::string*>(ptr)));
+        return new T(Rational(Integer(*static_cast<std::string*>(ptr))));
     } else
         return new T(*static_cast<std::string*>(ptr));
 }
