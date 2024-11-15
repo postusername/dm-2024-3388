@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 #include "parser.h"
 #include "tree.cpp"
 

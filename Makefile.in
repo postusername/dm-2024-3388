@@ -1,5 +1,5 @@
 CXX = @CXX@
-CXXFLAGS = -g --debug -Wconversion -std=c++17
+CXXFLAGS = -g --debug -Wconversion -std=c++17 -stdlib=libc++
 
 
 all: algebra tests
