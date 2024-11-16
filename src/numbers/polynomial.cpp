@@ -1,7 +1,7 @@
 #include "polynomial.h"
 
 
-std::map<Natural, Rational> Polynomial::from_string(std::string input) {
+std::map<Natural, Rational> Polynomial::from_string(std::string& input) {
     std::map<Natural, Rational> data;
         std::regex full_regex(R"(^Poly\[((\[(Frac\[\s*-?\d+\s*,\s*[1-9]\d*\]|-?\d+)\s*,\s*-?[0-9]+\])(,\s*\[(Frac\[\s*-?\d+\s*,\s*[1-9]\d*\]|-?\d+)\s*,\s*[0-9]+\])*)\]$)");
 
@@ -21,7 +21,8 @@ std::map<Natural, Rational> Polynomial::from_string(std::string input) {
         // Проверка совпадений и вывод результатов
         for (std::sregex_iterator i = terms_begin; i != terms_end; ++i) {
             std::smatch match = *i;
-            Natural degree(match[4].str());
+            std::string degree_match = match[4].str();
+            Natural degree(degree_match);
 
             if (match[2].matched) { // Если нашли Frac[a, b]
                 coefficient = Rational(match[2].str());

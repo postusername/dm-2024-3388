@@ -75,13 +75,13 @@ private:
     bool is_contains_brackets(const std::string &token);
     bool is_variable(const std::string &token);
     bool is_number(const std::string &token);
-    Token create_token(const std::string &token);
-    Token validate_operator(const std::string &token);
-    Token validate_bracket_sequence(const std::string &token);
+    Token create_token(std::string &token);
+    Token validate_operator(std::string &token);
+    Token validate_bracket_sequence(std::string &token);
 public:
     Parser() = default;
-    std::vector<Token> tokenize(const std::string &input);
-    Token create_number_token(const std::string &token);
+    std::vector<Token> tokenize(std::string &input);
+    Token create_number_token(std::string &token);
 };
 
 #endif // PARSER_H

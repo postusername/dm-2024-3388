@@ -117,7 +117,6 @@ string test_multiply_nn()
 
 string test_sub_m_n()
 {
-    cout << 111 << endl; // вычитание числа, умноженного на цифру(если результат положителен)
     assert(Natural(22).sub_nmul(Natural(11), 2) == Natural(0));
     assert(Natural(13).sub_nmul(Natural(15), 0) == Natural(13));
     assert(Natural(13).sub_nmul(Natural(0), 1) == Natural(13));
@@ -131,7 +130,6 @@ string test_sub_m_n()
     }
     catch (const invalid_argument &ex)
     {
-        cout << 11111111111 << endl;
     }
 
     return "PASSED";
@@ -140,7 +138,6 @@ string test_sub_m_n()
 string test_div_nn_nk()
 {
     // Тесты для корректных случаев
-    cout << Natural(100).div_nmul(Natural(2), Natural(1)) << endl; // Вычисление первой цифры деления большего натурального на меньшее, домноженное на 10^k, где k - номер позиции этой цифры (номер считается с нуля)
     assert(Natural(100).div_nmul(Natural(2), Natural(1)) == Natural(5));
     // 100 / (2 * 10^1) = 5
     return "PASSED";

@@ -26,7 +26,7 @@ Rational::Rational(std::string str) {
 
 
 // Преобразование строки в пару (Integer, Natural)
-std::pair<Integer, Natural> Rational::from_string(std::string str) {
+std::pair<Integer, Natural> Rational::from_string(std::string& str) {
   std::regex pattern(R"(Frac\[\s*(-?\d+)\s*,\s*(-?\d+)\s*\])"); // Frac[Integer, Integer]
   std::smatch matches;
   

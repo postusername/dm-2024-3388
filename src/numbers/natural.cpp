@@ -16,13 +16,13 @@ Natural::Natural(uint64_t num) {
     }
 }
 
-vector<Digit> Natural::from_string(string str) {
+vector<Digit> Natural::from_string(string& str) {
     std::vector<Digit> data;
     for (size_t i = 0; i < str.size(); ++i)
     {
         if (str[i] < '0' || str[i] > '9')
             throw std::invalid_argument("Invalid digit");
-        data.push_back(Digit(str[i] - '0'));
+        data.emplace_back(str[i] - '0');
     }
     reverse(data.begin(), data.end());
     return data;
@@ -95,30 +95,34 @@ void Natural::carry_flex(size_t i)
             return;
         this->data.at(j - 1).carry = 0; // Обнуляем у предыдущего
     }
-    this->data.push_back(Digit(this->data.at(this->data.size() - 1).carry)); // Если не влезло в текущие разряды, добавляем новый
+    this->data.emplace_back(this->data.at(this->data.size() - 1).carry); // Если не влезло в текущие разряды, добавляем новый
     this->data.at(this->data.size() - 1).carry = 0;                          // Обнуляем у предыдущего
 }
 
 
 void Natural::zero_flex()
 {
+    const Digit zero = Digit(0);
     size_t j = 0;
     for (size_t i = this->data.size() - 1; i > 0; --i)
     {
-        if (this->data.at(i) == Digit(0))
+        if (this->data.at(i) == zero)
             j++;
         else
             break; // Берем все незначащие нули
     }
-    for (size_t i = 0; i < j; ++i)
-        this->data.pop_back(); // Удаляем их
+    this->data.resize(this->data.size() - j);
 }
 
 
 // NZER_N_B Беннер В. А. 3388
 bool Natural::is_zero()
 {
-    return *this == Natural(0);
+    const Digit zero = Digit(0);
+    if (data.size() == 1 && data.at(0) == zero)
+        return true;
+    else
+        return false;
 }
 
 
@@ -192,12 +196,15 @@ const Natural operator-(const Natural &left, const Natural &right)
 
 
 // MUL_ND_N Беннер В. А. 3388
-const Natural operator*(const Natural &num, const Digit &digit)
-{
-    Natural result(0);
-    for (size_t i = 0; i < (size_t)digit.d; ++i)
-        result = result + num;
-    return result;
+const Natural operator*(const Natural &num, const Digit &digit) {
+    if (digit == 0)
+        return Natural(0);
+    else if (digit % 2 == 1)
+        return Natural(num) * (digit - 1) + num;
+    else {
+        Natural half = Natural(num) * (digit / 2);
+        return half + half;
+    }
 }
 
 
@@ -210,18 +217,21 @@ const Natural operator*(const Digit &digit, const Natural &num)
 // MUL_Nk_N Беннер В. А. 3388
 Natural &Natural::mul_pow10(const Natural k)
 {
+    if (this->is_zero())
+        return *this;
+
     reverse(this->data.begin(), this->data.end());
     size_t multiplier = 1;
     for (size_t i = 0; i < k.data.size(); ++i)
     {
         for (size_t j = 0; j < k.data.at(i).d * multiplier; ++j)
         {
-            this->data.push_back(Digit(0)); // Добавляем нули в конец
+            this->data.emplace_back(0); // Добавляем нули в конец
         }
         multiplier *= 10;
     }
     reverse(this->data.begin(), this->data.end());
-    this->zero_flex();
+    //this->zero_flex();
     return *this;
 }
 

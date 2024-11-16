@@ -26,7 +26,7 @@ class Rational : public NumberInterface<std::pair<Integer, Natural>> {
   Rational(Integer num); // TRANS_Z_Q
   Rational(std::string str);
 
-  std::pair<Integer, Natural> from_string(std::string str);
+  std::pair<Integer, Natural> from_string(std::string& str);
 
   Rational& reduce(); // RED_Q_Q
   bool is_int(); // INT_Q_B

@@ -163,7 +163,7 @@ Integer::Integer(bool is_negative, Natural natural_value)
 
 
 // Метод для преобразования строки в пару <bool, Natural>
-pair<bool, Natural> Integer::from_string(std::string str)
+pair<bool, Natural> Integer::from_string(std::string& str)
 {
   std::regex pattern(R"(([\-])?(\d+))");
   std::smatch matches;
@@ -174,7 +174,8 @@ pair<bool, Natural> Integer::from_string(std::string str)
     bool sign = true;
     if (matches[1].str().empty())
       sign = false;
-    Natural num = Natural(matches[2].str());
+    std::string match = matches[2].str();
+    Natural num = Natural(match);
     if (num == Natural(0))
       sign = false;
     return std::pair<bool, Natural>(sign, num);

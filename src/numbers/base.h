@@ -26,6 +26,7 @@ public:
     friend const Digit operator-(const Digit &left, const Digit &right);
     friend const Digit operator*(const Digit &left, const Digit &right);
     friend const Digit operator/(const Digit &left, const Digit &right);
+    friend const Digit operator%(const Digit &left, const Digit &right);
     friend ostream &operator<<(ostream &stream, const Digit &digit);
 
     int d;
@@ -41,7 +42,7 @@ public:
     {
         this->data = from_string(str);
     }
-    virtual T from_string(string str) = 0;
+    virtual T from_string(string& str) = 0;
     virtual string to_string() = 0;
     friend ostream &operator<<(ostream &stream, NumberInterface<T>& num)
     {

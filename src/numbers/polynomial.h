@@ -27,7 +27,7 @@ public:
     Polynomial(std::string str);
     std::string to_string();
 
-    std::map<Natural, Rational> from_string(std::string str);
+    std::map<Natural, Rational> from_string(std::string& str);
 
     Polynomial &operator+=(const Polynomial &other);
     Polynomial &operator+=(const Rational &other);

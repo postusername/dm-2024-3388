@@ -8,7 +8,8 @@
 string test_from_string_valid()
 {
     Integer integer("5");
-    std::pair<bool, Natural> result = integer.from_string("5");
+    std::string test("5");
+    std::pair<bool, Natural> result = integer.from_string(test);
     assert(result.first == false);
     assert(result.second == 5);
 
@@ -18,7 +19,8 @@ string test_from_string_valid()
 string test_from_string_zero()
 {
     Integer integer("0");
-    std::pair<bool, Natural> result = integer.from_string("0");
+    std::string test("0");
+    std::pair<bool, Natural> result = integer.from_string(test);
     assert(result.first == false);
     assert(result.second == 0);
 
@@ -28,7 +30,8 @@ string test_from_string_zero()
 string test_from_string_negative()
 {
     Integer integer("-5");
-    std::pair<bool, Natural> result = integer.from_string("-5");
+    std::string test("-5");
+    std::pair<bool, Natural> result = integer.from_string(test);
     assert(result.first == true);
     // Проверка, что Natural корректно обрабатывает отрицательные значения
     assert(result.second == 5);

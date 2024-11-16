@@ -1,7 +1,7 @@
 #include "parser.h"
 
 
-std::vector<std::string> split(const std::string &input)
+std::vector<std::string> split(std::string &input)
 {
     std::vector<std::string> tokens;
     std::string current_token;
@@ -41,7 +41,7 @@ std::vector<std::string> split(const std::string &input)
     return tokens;
 }
 
-std::vector<Token> Parser::tokenize(const std::string &input)
+std::vector<Token> Parser::tokenize(std::string &input)
 {
     std::vector<Token> tokens;
     for (auto token : split(input))
@@ -49,7 +49,7 @@ std::vector<Token> Parser::tokenize(const std::string &input)
     return tokens;
 }
 
-Token Parser::create_token(const std::string &token)
+Token Parser::create_token(std::string &token)
 {
     if (is_number(token))
         return create_number_token(token);
@@ -61,7 +61,7 @@ Token Parser::create_token(const std::string &token)
         return validate_operator(token);
 }
 
-Token Parser::validate_bracket_sequence(const std::string &token)
+Token Parser::validate_bracket_sequence(std::string &token)
 {
     size_t open_paren_pos = token.find('[');
     size_t close_paren_pos = token.find(']');
@@ -91,7 +91,7 @@ Token Parser::validate_bracket_sequence(const std::string &token)
         throw std::runtime_error("NameError: function '" + func_name + "' is not defined");
 }
 
-Token Parser::validate_operator(const std::string &token)
+Token Parser::validate_operator(std::string &token)
 {
     if (token == "=")
         return Token(token, TokenType::Assignment);
@@ -101,7 +101,7 @@ Token Parser::validate_operator(const std::string &token)
         throw std::runtime_error("SyntaxError: unrecognized token '" + token + "'");
 }
 
-Token Parser::create_number_token(const std::string &token)
+Token Parser::create_number_token(std::string &token)
 {
     try
     {

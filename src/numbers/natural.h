@@ -7,14 +7,14 @@ class Natural : public NumberInterface<vector<Digit>>
 public:
     Natural() = default;
     Natural(const Natural &num) : data(num.data) {}
-    Natural(string str)
+    Natural(string& str)
     {
         this->data = from_string(str);
     }
     Natural(std::vector<Digit> d) : data(d) {}
     Natural(uint64_t num);
     friend ostream &operator<<(ostream &stream, Natural &num);
-    vector<Digit> from_string(string str);
+    vector<Digit> from_string(string& str);
     string to_string(uint64_t num);
     string to_string(vector<Digit> num);
     string to_string();
